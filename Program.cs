@@ -9,7 +9,7 @@ namespace LexicalAnalyzer
     class Program
     {
         static void Main(string[] args)
-        {           
+        {
             Console.Write("Input name of file with text to analyze: ");
             String fileName = Console.ReadLine();
             LA lexicalAnalyzer = new LA(fileName);
@@ -17,6 +17,7 @@ namespace LexicalAnalyzer
             {
                 Console.Write($"{token}, ");
             }
+            Console.ReadKey();
         }
     }
 }

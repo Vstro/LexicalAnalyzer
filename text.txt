@@ -1,0 +1,1 @@
+if a xor b and c then if d1 or ifa then a:=20 else ifa:=30 {comment1} else elsea:=3 {complicated comment with c:=23}
