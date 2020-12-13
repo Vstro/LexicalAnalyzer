@@ -15,7 +15,7 @@ namespace LexicalAnalyzer
             LA lexicalAnalyzer = new LA(fileName);
             foreach (Token token in lexicalAnalyzer.GetTokens())
             {
-                Console.Write($"{token}, ");
+                Console.WriteLine(token);
             }
             Console.ReadKey();
         }

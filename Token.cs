@@ -20,7 +20,7 @@ namespace LexicalAnalyzer
 
         public override String ToString()
         {
-            return $"[{Lexem}]:[{LexemType}]";
+            return $"{Lexem} : {LexemType}";
         }
     }
 }

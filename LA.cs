@@ -29,7 +29,7 @@ namespace LexicalAnalyzer
 
         private List<String> SplitIntoLexems()
         {
-            List<String> lexems = new Regex(@"[\s+\t+\n+]").Split(Text).ToList();
+            List<String> lexems = new Regex(@"[\s+\t+\n+]").Split(Text).Where(s => s.Length > 0).ToList();
             for (int i = 0; i < lexems.Count; i++)
             {
                 for (int j = 0; j < lexems[i].Length; j++)
@@ -38,17 +38,37 @@ namespace LexicalAnalyzer
                         lexems[i][j] == '{' || lexems[i][j] == '}' || lexems[i][j] == ';')
                     {
                         lexems.Insert(i + 1, lexems[i][j].ToString());
-                        lexems.Insert(i + 2, new String(lexems[i].Skip(j + 1).ToArray()));
+                        if (lexems[i].Skip(j + 1).Count() != 0)
+                        {
+                            lexems.Insert(i + 2, new String(lexems[i].Skip(j + 1).ToArray()));
+                        }                       
                         lexems[i] = lexems[i].Remove(j);
-                        i++;
+                        if (lexems[i].Length == 0)
+                        {
+                            lexems.RemoveAt(i);
+                        }
+                        else
+                        {
+                            i++;
+                        }
                         break;
                     }
                     if (lexems[i][j] == ':')
                     {
                         lexems.Insert(i + 1, lexems[i].Substring(j, 2));
-                        lexems.Insert(i + 2, new String(lexems[i].Skip(j + 2).ToArray()));
+                        if (lexems[i].Skip(j + 2).Count() != 0)
+                        {
+                            lexems.Insert(i + 2, new String(lexems[i].Skip(j + 2).ToArray()));
+                        }
                         lexems[i] = lexems[i].Remove(j);
-                        i++;
+                        if (lexems[i].Length == 0)
+                        {
+                            lexems.RemoveAt(i);
+                        }
+                        else
+                        {
+                            i++;
+                        }
                         break;
                     }
                 }
@@ -61,7 +81,19 @@ namespace LexicalAnalyzer
             bool isComment = false;
             for (int i = 0; i < tokens.Count; i++)
             {
-                if (isComment)
+                if (IsDelimiter(tokens[i].Lexem))
+                {
+                    tokens[i].LexemType = LexemType.Delimiter;
+                    if (tokens[i].Lexem.Equals("{"))
+                    {
+                        isComment = true;
+                    }
+                    else if (tokens[i].Lexem.Equals("}"))
+                    {
+                        isComment = false;
+                    }
+                }
+                else if (isComment)
                 {
                     tokens[i].LexemType = LexemType.Comment;
                 }
@@ -76,18 +108,6 @@ namespace LexicalAnalyzer
                 else if (IsUint(tokens[i].Lexem))
                 {
                     tokens[i].LexemType = LexemType.Uint;
-                }
-                else if (IsDelimiter(tokens[i].Lexem))
-                {
-                    tokens[i].LexemType = LexemType.Delimiter;
-                    if (tokens[i].Lexem.Equals("{"))
-                    {
-                        isComment = true;
-                    }
-                    else if (tokens[i].Lexem.Equals("}"))
-                    {
-                        isComment = false;
-                    }
                 }
                 else if (IsAssignment(tokens[i].Lexem))
                 {
@@ -111,7 +131,7 @@ namespace LexicalAnalyzer
 
         private bool IsKeyword(String lexem)
         {
-            if (lexem.Equals("if") || lexem.Equals("then") || lexem.Equals("else")|| lexem.Equals("or")|| lexem.Equals("xor")|| lexem.Equals("and"))
+            if (lexem.Equals("if") || lexem.Equals("then") || lexem.Equals("else") || lexem.Equals("or") || lexem.Equals("xor") || lexem.Equals("and"))
             {
                 return true;
             }
@@ -130,7 +150,7 @@ namespace LexicalAnalyzer
             }
             foreach (char c in lexem.Skip(1))
             {
-                if(!IsLetter(c) && !IsNumber(c))
+                if (!IsLetter(c) && !IsNumber(c))
                 {
                     return false;
                 }
@@ -160,7 +180,7 @@ namespace LexicalAnalyzer
 
         private bool IsDelimiter(String lexem)
         {
-            if (lexem.Equals("(") || lexem.Equals(")") || lexem.Equals("{") || 
+            if (lexem.Equals("(") || lexem.Equals(")") || lexem.Equals("{") ||
                 lexem.Equals("}") || lexem.Equals(";"))
             {
                 return true;
@@ -179,7 +199,7 @@ namespace LexicalAnalyzer
 
         private bool IsLetter(char c)
         {
-            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'я') || c == 'ё' || c == 'Ё')
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= 'А' && c <= 'я') || c == 'ё' || c == 'Ё')
             {
                 return true;
             }
